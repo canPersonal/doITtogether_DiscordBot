@@ -1,0 +1,2 @@
+invite:https://discord.com/api/oauth2/authorize?client_id=1193647901176496301&permissions=8&scope=bot
+token:MTE5MzY0NzkwMTE3NjQ5NjMwMQ.Gk-6Cy.MCLpjdPjLv4rCTMil3Pj1f9O8SIWMV7FzT-Xw8
