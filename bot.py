@@ -24,7 +24,7 @@ def run_discord_bot():
 
     TOKEN = 'MTE5MzY0NzkwMTE3NjQ5NjMwMQ.Gk-6Cy.MCLpjdPjLv4rCTMil3Pj1f9O8SIWMV7FzT-Xw8'
     
-    intents = discord.Intents.default()
+    intents = discord.Intents.all()
     intents.members = True
     intents.message_content = True
     description = '''An example bot to showcase the discord.ext.commands extension
@@ -34,7 +34,7 @@ def run_discord_bot():
 
     bot = commands.Bot(command_prefix='?', description=description, intents=intents)
 
-    TEST_GUILD = discord.Object(0)
+    #TEST_GUILD = discord.Object(0)
     
 
 
@@ -42,13 +42,37 @@ def run_discord_bot():
 
     @bot.event
     async def on_ready():
-        print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-        print('------')
+        try:
+            s = await bot.tree.sync()
+            print(f'Synced {len(s)} commands')
+        except Exception as e:
+            print(f'Error syncing commands: {e}')
+    
+        print(f'Logged in as {bot.user.name}')
+
+    
+    @bot.tree.command(name='ping',description='asjkasbd')
+    async def ping(interaction: discord.Interaction):
+        bot_latency=round(bot.latency*1000)
+    # Send the modal with an instance of our `Feedback` class
+    # Since modals require an interaction, they cannot be done as a response to a text command.
+    # They can only be done as a response to either an application command or a button press.
+        await interaction.response.send_message(f'Logged in as {bot_latency} (ID: {bot.user.id})')
+
+            
+    @bot.tree.command(name='feedback')
+    async def feedback(interaction: discord.Interaction):
+    # Send the modal with an instance of our `Feedback` class
+    # Since modals require an interaction, they cannot be done as a response to a text command.
+    # They can only be done as a response to either an application command or a button press.
+        await interaction.response.send_modal(Feedback())
 
     @bot.command()
     async def add(ctx, left: int, right: int):
         """Adds two numbers together."""
         await ctx.send(left + right)
+
+    
 
 
     # Define a simple View that gives us a confirmation menu
@@ -125,14 +149,8 @@ def run_discord_bot():
             # Make sure we know what the error actually is
             traceback.print_exception(type(error), error, error.__traceback__)
 
-    @bot.tree.command(guild=TEST_GUILD, description="Submit feedback")
-    async def feedback(interaction: discord.Interaction):
-    # Send the modal with an instance of our `Feedback` class
-    # Since modals require an interaction, they cannot be done as a response to a text command.
-    # They can only be done as a response to either an application command or a button press.
-        await interaction.response.send_modal(Feedback())
 
-            
+
 
 
 

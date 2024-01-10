@@ -1,13 +1,9 @@
 import discord
-import responses
 from discord.ext import commands
+import random
+import responses
 
-intents = discord.Intents.default()
-intents.members = True
-description = '''An example bot to showcase the discord.ext.commands extension
-module.
 
-There are a number of utility commands being showcased here.'''
 
 
 async def send_message(message, user_message,is_private):
@@ -19,45 +15,55 @@ async def send_message(message, user_message,is_private):
 
 
 def run_discord_bot():
+    import discord
+    from discord.ext import commands
+    import random
+    import responses
+    from discord import app_commands
+    import traceback
+
     TOKEN = 'MTE5MzY0NzkwMTE3NjQ5NjMwMQ.Gk-6Cy.MCLpjdPjLv4rCTMil3Pj1f9O8SIWMV7FzT-Xw8'
-    client = discord.Client(intents=intents)
+    
+    intents = discord.Intents.all()
+    intents.members = True
+    intents.message_content = True
+    description = '''An example bot to showcase the discord.ext.commands extension
+    module.
 
-    class Bot(commands.Bot):
-        def __init__(self):
-            intents = discord.Intents.default()
-            intents.message_content = True
+    There are a number of utility commands being showcased here.'''
 
-            super().__init__(command_prefix=commands.when_mentioned_or('$'), intents=intents)
+    bot = commands.Bot(command_prefix='?', description=description, intents=intents)
 
-        async def on_ready(self):
-            print(f'Logged in as {self.user} (ID: {self.user.id})')
-            print('------')
+    #TEST_GUILD = discord.Object(0)
+    
 
 
-    @client.event
+
+
+    @bot.event
     async def on_ready():
-        print(f'{client.user} is now running!')
+        print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+        print('------')
+
+    
+    @bot.tree.command(name='ping',description='asjkasbd')
+    async def ping(interaction: discord.Interaction):
+        bot_latency=round(bot.latency*1000)
+    # Send the modal with an instance of our `Feedback` class
+    # Since modals require an interaction, they cannot be done as a response to a text command.
+    # They can only be done as a response to either an application command or a button press.
+        await interaction.response.send_message(f'Logged in as {bot_latency} (ID: {bot.user.id})')
+
+            
 
 
-    @client.event
-    async def on_message(message):
-        if message.author == client.user:
-            return
-        if str(message.channel) == 'eventhorizon':
-            username = str(message.author)
-            user_message =str(message.content)
-            channel = str(message.channel)
+    @bot.command()
+    async def add(ctx, left: int, right: int):
+        """Adds two numbers together."""
+        await ctx.send(left + right)
 
-            #print(ff"{username} said: '{user_message}' ({channel})")
-            print(f'{user_message} is now running!')
+    
 
-            if user_message[0] == '?':
-                user_message = user_message[1:]
-                await send_message(message, user_message, is_private=True)
-            else:
-                await send_message(message, user_message, is_private=False)
-        else:
-            return
 
     # Define a simple View that gives us a confirmation menu
     class Confirm(discord.ui.View):
@@ -82,7 +88,6 @@ def run_discord_bot():
             self.stop()
 
 
-    bot = Bot()
 
 
     @bot.command()
@@ -100,6 +105,52 @@ def run_discord_bot():
         else:
             print('Cancelled...')
 
+    class Feedback(discord.ui.Modal, title='Feedback'):
+    # Our modal classes MUST subclass `discord.ui.Modal`,
+    # but the title can be whatever you want.
 
-    client.run(TOKEN)
+    # This will be a short input, where the user can enter their name
+    # It will also have a placeholder, as denoted by the `placeholder` kwarg.
+    # By default, it is required and is a short-style input which is exactly
+    # what we want.
+        name = discord.ui.TextInput(
+            label='Name',
+            placeholder='Your name here...',
+        )
+
+        # This is a longer, paragraph style input, where user can submit feedback
+        # Unlike the name, it is not required. If filled out, however, it will
+        # only accept a maximum of 300 characters, as denoted by the
+        # `max_length=300` kwarg.
+        feedback = discord.ui.TextInput(
+            label='What do you think of this new feature?',
+            style=discord.TextStyle.long,
+            placeholder='Type your feedback here...',
+            required=False,
+            max_length=300,
+        )
+
+        async def on_submit(self, interaction: discord.Interaction):
+            await interaction.response.send_message(f'Thanks for your feedback, {self.name.value}!', ephemeral=True)
+
+        async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
+            await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
+
+            # Make sure we know what the error actually is
+            traceback.print_exception(type(error), error, error.__traceback__)
+
+    #@bot.tree.command(name='feedback',guild=TEST_GUILD, description='Submit feedback')
+    #async def feedback(interaction: discord.Interaction):
+    ## Send the modal with an instance of our `Feedback` class
+    ## Since modals require an interaction, they cannot be done as a response to a text command.
+    ## They can only be done as a response to either an application command or a button press.
+    #    await interaction.response.send_modal(Feedback())
+
+
+
+
+
+
+
+    bot.run(TOKEN)
     
