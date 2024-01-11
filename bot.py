@@ -5,7 +5,6 @@ import responses
 
 
 
-
 async def send_message(message, user_message,is_private):
     try:
         response = responses.handle_response(user_message)
@@ -34,11 +33,6 @@ def run_discord_bot():
 
     bot = commands.Bot(command_prefix='?', description=description, intents=intents)
 
-    #TEST_GUILD = discord.Object(0)
-    
-
-
-
 
     @bot.event
     async def on_ready():
@@ -66,6 +60,43 @@ def run_discord_bot():
     # Since modals require an interaction, they cannot be done as a response to a text command.
     # They can only be done as a response to either an application command or a button press.
         await interaction.response.send_modal(Feedback())
+
+    class Feedback(discord.ui.Modal, title='Feedback'):
+    # Our modal classes MUST subclass `discord.ui.Modal`,
+    # but the title can be whatever you want.
+
+    # This will be a short input, where the user can enter their name
+    # It will also have a placeholder, as denoted by the `placeholder` kwarg.
+    # By default, it is required and is a short-style input which is exactly
+    # what we want.
+
+        name = discord.ui.TextInput(
+            label='Name',
+            placeholder='Your name here...',
+        )
+
+        # This is a longer, paragraph style input, where user can submit feedback
+        # Unlike the name, it is not required. If filled out, however, it will
+        # only accept a maximum of 300 characters, as denoted by the
+        # `max_length=300` kwarg.
+        feedback = discord.ui.TextInput(
+            label='What do you think of this new feature?',
+            style=discord.TextStyle.long,
+            placeholder='Type your feedback here...',
+            required=False,
+            max_length=300,
+        )
+
+        async def on_submit(self, interaction: discord.Interaction):
+            await interaction.response.send_message(f'Thanks for your feedback, {self.name.value}!', ephemeral=True)
+
+        async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
+            await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
+
+            # Make sure we know what the error actually is
+            traceback.print_exception(type(error), error, error.__traceback__)
+   
+        
 
     @bot.command()
     async def add(ctx, left: int, right: int):
@@ -115,39 +146,51 @@ def run_discord_bot():
         else:
             print('Cancelled...')
 
-    class Feedback(discord.ui.Modal, title='Feedback'):
-    # Our modal classes MUST subclass `discord.ui.Modal`,
-    # but the title can be whatever you want.
 
-    # This will be a short input, where the user can enter their name
-    # It will also have a placeholder, as denoted by the `placeholder` kwarg.
-    # By default, it is required and is a short-style input which is exactly
-    # what we want.
-        name = discord.ui.TextInput(
-            label='Name',
-            placeholder='Your name here...',
+
+        
+    @bot.tree.command(name='initiate')
+    async def initiate(interaction: discord.Interaction):
+        await interaction.response.send_modal(event())
+
+
+
+
+    class event(discord.ui.Modal, title='Event'):
+# 
+        name_Event = discord.ui.TextInput(
+            label='Event Name',
+            required=True,
         )
 
-        # This is a longer, paragraph style input, where user can submit feedback
-        # Unlike the name, it is not required. If filled out, however, it will
-        # only accept a maximum of 300 characters, as denoted by the
-        # `max_length=300` kwarg.
-        feedback = discord.ui.TextInput(
-            label='What do you think of this new feature?',
+        description_event = discord.ui.TextInput(
+            label='Describe the event',
             style=discord.TextStyle.long,
-            placeholder='Type your feedback here...',
-            required=False,
+            required=True,
             max_length=300,
         )
 
-        async def on_submit(self, interaction: discord.Interaction):
-            await interaction.response.send_message(f'Thanks for your feedback, {self.name.value}!', ephemeral=True)
+        duration_event = discord.ui.TextInput(
+            label='Approximate Duration',
+            required=True,
+        )
 
+        async def on_submit(self, interaction: discord.Interaction):
+             view = Confirm()
+             channel= discord.utils.get(interaction.guild.channels,name='events')
+             e = discord.Embed(title=self.name_Event, description=self.duration_event)
+             e.set_author(name=interaction.user,icon_url=interaction.user.avatar)
+             await channel.send(embed=e,view=view)
+             await interaction.response.send_message(f'Thanks for your feedback!', ephemeral=True)
+
+             
         async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
             await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
 
             # Make sure we know what the error actually is
             traceback.print_exception(type(error), error, error.__traceback__)
+
+
 
 
 
