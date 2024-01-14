@@ -1,0 +1,56 @@
+[
+  {
+    "event_id": "39ae4f38-36be-4304-93d7-eb5f980a4f7e",
+    "name": "s",
+    "description": "d",
+    "duration": "x",
+    "author": "uazripiholes",
+    "author_avatar": "https://cdn.discordapp.com/avatars/227169936735207425/a2bb70af0161f4243c4dcbbe04654850.png?size=1024",
+    "timestamp": "2024-01-14T21:26:10.054566",
+    "num_participants": 1,
+    "participant_names": [
+      "uazripiholes"
+    ]
+  },
+  {
+    "event_id": "163d273e-6b18-4def-8a58-e75b0f84746d",
+    "name": "a",
+    "description": "2",
+    "duration": "3",
+    "author": "uazripiholes",
+    "author_avatar": "https://cdn.discordapp.com/avatars/227169936735207425/a2bb70af0161f4243c4dcbbe04654850.png?size=1024",
+    "timestamp": "2024-01-14T21:26:18.272715",
+    "num_participants": 1,
+    "participant_names": [
+      "uazripiholes"
+    ]
+  },
+  {
+    "event_id": "9286db4f-962b-49b2-bc4e-743e1be3af46",
+    "name": "de",
+    "description": "s",
+    "duration": "1",
+    "author": "uazripiholes",
+    "author_avatar": "https://cdn.discordapp.com/avatars/227169936735207425/a2bb70af0161f4243c4dcbbe04654850.png?size=1024",
+    "timestamp": "2024-01-14T21:36:12.160054",
+    "num_participants": 2,
+    "participant_names": [
+      "uazripiholes",
+      "uazripiholes"
+    ]
+  },
+  {
+    "event_id": "381859d1-c663-4dc3-8f06-99149c5cfb94",
+    "name": "asd",
+    "description": "sad",
+    "duration": "x",
+    "author": "uazripiholes",
+    "author_avatar": "https://cdn.discordapp.com/avatars/227169936735207425/a2bb70af0161f4243c4dcbbe04654850.png?size=1024",
+    "timestamp": "2024-01-14T21:46:35.285596",
+    "num_participants": 2,
+    "participant_names": [
+      "uazripiholes",
+      "uazripiholes"
+    ]
+  }
+]
