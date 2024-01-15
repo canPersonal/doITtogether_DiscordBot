@@ -2,7 +2,6 @@ def run_discord_bot():
     import discord
     from discord.ext import commands
     import random
-    import responses
     from discord import app_commands
     import traceback
     import json
