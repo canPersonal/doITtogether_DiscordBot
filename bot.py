@@ -19,6 +19,7 @@ def run_discord_bot():
     intents = discord.Intents.all()
     intents.members = True
     intents.message_content = True
+    intents.messages = True
     description = '''An example bot to showcase the discord.ext.commands extension
     module.
 
@@ -160,7 +161,7 @@ def run_discord_bot():
         # We also send the user an ephemeral message that we're confirming their choice.
         @discord.ui.button(label='IamIN!', style=discord.ButtonStyle.green,custom_id='IN')
         
-        async def button_callback(self,  interaction:discord.Interaction, button: discord.ui.Button,):
+        async def button_callback(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
             #button.disabled=True
             # Read existing data from the file
@@ -212,12 +213,12 @@ def run_discord_bot():
 
 
 
-            view = NextStage1()
+            view2 = NextStage1()
             e = discord.Embed(title=matching_event['name'], description='Even Created! Next Stage:')
 
 
             # Send the message with buttons and view
-            await dm_channel.send(embed=e, view=view)
+            await dm_channel.send(embed=e, view=view2)
 
             await interaction.response.edit_message(view=self)
             await interaction.message.channel.send('Button clicked! Event data updated.!')
@@ -227,33 +228,99 @@ def run_discord_bot():
             super().__init__()
             self.value = None
 
+        async def disable_buttons(self):
+            # Disable all buttons in the view
+            for item in self.children:
+                if isinstance(item, discord.ui.Button):
+                    item.disabled = True
 
-        @discord.ui.button(style=discord.ButtonStyle.green,custom_id='set_time', label='Set Time')
-        async def set_time_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-            await interaction.followup.send('Set Time button clicked!')
+        @discord.ui.button(style=discord.ButtonStyle.green, custom_id='set_time', label='Set Time')
+        async def set_time_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = 1
+            await interaction.response.send_message('Set Time button clicked!')
+        
+            # Disable the buttons and update the message
+            await self.disable_buttons()
+            await interaction.message.edit(view=self)
 
-        @discord.ui.button(style=discord.ButtonStyle.gray,custom_id='edit', label='Edit')
-        async def edit_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-            await interaction.followup.send('Edit button clicked!')
+        @discord.ui.button(style=discord.ButtonStyle.gray, custom_id='edit', label='Edit')
+        async def edit_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = 1
+            await interaction.response.send_modal(edt_event())
 
-        @discord.ui.button(style=discord.ButtonStyle.red,custom_id='cancel', label='Cancel')
-        async def cancel_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-            await interaction.followup.send('Cancel button clicked!')
+            # Disable the buttons and update the message
+            await self.disable_buttons()
+            await interaction.message.edit(view=self)
+
+
+        @discord.ui.button(style=discord.ButtonStyle.red, custom_id='cancel', label='Cancel')
+        async def cancel_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = 1
+            await interaction.response.send_message('Please confirm the name of the event you want to cancel.')
+            # Wait for user input
+            try:
+                user_input = await bot.wait_for('message', check=lambda m: m.author.id == interaction.user.id, timeout=60)
+                self.event_name = user_input.content.strip()
+            except asyncio.TimeoutError:
+                await interaction.followup.send('No response received. Cancel operation aborted.')
+                return
+
+            # Add your cancellation logic directly here
+            # For example, you can use the event_name to perform the cancellation
+            try:
+                with open('events.json', 'r') as file:
+                    events_data = json.load(file)
+            except FileNotFoundError:
+                return await interaction.followup.send('No events file found.')
+
+            matching_event = next((event for event in events_data if 'name' in event and event['name'] == self.event_name), None)
+            matching_index = next((idx for idx, event in enumerate(events_data) if 'name' in event and event['name'] == self.event_name), None)
+
+            if matching_event:
+                removed_event = events_data.pop(matching_index)
+
+                # Save the updated data back to the file
+                with open('events.json', 'w') as file:
+                    json.dump(events_data, file, indent=2)
+
+                await interaction.followup.send(f'Event "{self.event_name}" has been canceled.')
+
+            await refresh_events(interaction, followup=interaction.followup)
+
+
+            # Disable the buttons and update the message
+            await self.disable_buttons()
+            await interaction.message.edit(view=self)
         
     @bot.tree.command(name='refresh')
     async def _refresh(interaction: discord.Interaction):
+        await refresh_events(interaction)
+
+
+    async def refresh_events(interaction: discord.Interaction, followup: discord.Message = None):
         # Get the designated channel for events
         channel1 = bot.get_channel(1195073936380133486)
-        await interaction.response.send_message('Starting')
+
+        if followup:
+            await interaction.followup.send('Starting')
+        else:
+            await interaction.response.send_message('Starting')
+
         if not channel1:
-            return await interaction.followup.send('Could not find the events channel.')
+            if followup:
+                return await interaction.followup.send('Could not find the events channel.')
+            else:
+                return await interaction.followup.send('Could not find the events channel.')
 
         # Read existing data from the file
         try:
             with open('events.json', 'r') as file:
                 events_data = json.load(file)
         except FileNotFoundError:
-            return await interaction.followup.send('No events file found.')
+            if followup:
+                return await interaction.followup.send('No events file found.')
+            else:
+                return await interaction.followup.send('No events file found.')
 
         # Get existing messages in the channel
         async for message in channel1.history(limit=None):
@@ -269,11 +336,17 @@ def run_discord_bot():
                     # If no matching event is found, delete the message
                     if not matching_event:
                         await message.delete()
-                        await interaction.followup.send(f'Deleted event: {title}')
+                        if followup:
+                            await interaction.followup.send(f'Deleted event: {title}')
+                        else:
+                            await interaction.followup.send(f'Deleted event: {title}')
             else:
                 await message.delete()
 
-        await interaction.followup.send('Refresh complete.')
+        if followup:
+            await interaction.followup.send('Refresh complete.')
+        else:
+            await interaction.followup.send('Refresh complete.')
 
 
 
@@ -317,6 +390,67 @@ def run_discord_bot():
             await interaction.followup.send(f'Event "{event_name_to_delete}" deleted successfully!', ephemeral=True)
         else:
             await interaction.followup.send(f'No matching event found with the name "{event_name_to_delete}". Deletion canceled.', ephemeral=True)
+
+
+    class edt_event(discord.ui.Modal, title='Event'):
+
+        old_name_Event = discord.ui.TextInput(
+            label='Old Event Name',
+            required=True,
+        )
+# 
+        name_Event = discord.ui.TextInput(
+            label='Event Name',
+            required=True,
+        )
+
+        description_event = discord.ui.TextInput(
+            label='Describe the event',
+            style=discord.TextStyle.long,
+            required=True,
+            max_length=300,
+        )
+
+        duration_event = discord.ui.TextInput(
+            label='Approximate Duration',
+            required=True,
+        )
+
+        async def on_submit(self, interaction: discord.Interaction):
+            # Load existing events from the file
+            try:
+                with open('events.json', 'r') as file:
+                    events_data = json.load(file)
+            except FileNotFoundError:
+                events_data = []
+
+            old_event_name = self.old_name_Event.value
+            events_data = [event for event in events_data if event.get('name') != old_event_name]
+            
+            # Create a dictionary to store event details
+            new_event_data = {
+                'event_id': str(uuid.uuid4()),  # Generate a random UUID for the event ID
+                'name': self.name_Event.value,
+                'description': self.description_event.value,
+                'duration': self.duration_event.value,
+                'author': str(interaction.user.id),
+                'author_avatar': str(interaction.user.avatar),
+                'timestamp': datetime.utcnow().isoformat(),  # Adding UTC timestamp
+                'num_participants': 1,  # Starting with 1 participant (the author)
+                'participant_names': [str(interaction.user)],  # Include author's name in the list
+            }
+
+
+
+            # Append the new event to the list
+            events_data.append(new_event_data)
+
+            # Save the updated list to the JSON file
+            with open('events.json', 'w') as file:
+                json.dump(events_data, file, indent=2)
+                
+
+            await interaction.response.send_message(f'Got it!', ephemeral=True)
 
 
     bot.run(TOKEN)
