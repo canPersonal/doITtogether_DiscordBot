@@ -64,12 +64,28 @@ def fill_out_form(browser):
             input_field.send_keys(f"{hour+17}")
 
 
-        #d1-h0
+        buttoncopy = WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((By.ID, 'copyhours'))
+        )
 
-        
- #<button type="button" title="Add a time slot" class="add-an-hour btn btn-default">
+        buttoncopy.click()
 
-        
+
+        # Submit the form (you may need to adjust the locator for the submit button)
+        submit2_button = browser.find_element(By.XPATH, "//button[contains(text(), 'Next')]")
+        submit2_button.click()
+
+
+        # Submit the form (you may need to adjust the locator for the submit button)
+        submit3_button = browser.find_element(By.XPATH, "//button[contains(text(), 'poll')]")
+        submit3_button.click()
+
+        public_link = browser.find_element(By.CLASS_NAME, 'public-link').get_attribute('href')
+        admin_link = browser.find_element(By.CLASS_NAME, 'admin-link').get_attribute('href')
+
+        print(f"Public Link: {public_link}")
+        print(f"Admin Link: {admin_link}")
+
 
 
 
@@ -78,9 +94,9 @@ def fill_out_form(browser):
 
     except Exception as e:
         print(f"Error: {e}")
-    #finally:
-        # Close the browser
-        #browser.quit()
+    finally:
+         #Close the browser
+        browser.quit()
 
 # Set up the Chrome webdriver
 browser = webdriver.Chrome()
