@@ -3,11 +3,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
+import math
 
 # Get tomorrow's date
 start_date = datetime.now() + timedelta(days=1)
 # Generate the next five dates
-date_list = [start_date + timedelta(days=i) for i in range(5)]
+date_list = [start_date + timedelta(days=i) for i in range(7)]
 # Format dates as yyyy-mm-dd
 formatted_dates = [date.strftime("%Y-%m-%d") for date in date_list]
 
@@ -31,29 +32,36 @@ def fill_out_form(browser):
             EC.element_to_be_clickable((By.ID, "add-a-day"))
         )
 
-        add_a_day_button.click()
-        add_a_day_button.click()
-
+        for _ in range(5):
+            add_a_day_button.click()
+            
         # Locate and input dates into each field using a loop
-        for i in range(0, 5):  # Assuming IDs are "dateformat1" to "dateformat5"
+        for i in range(0,6):  # Assuming IDs are "dateformat1" to "dateformat5"
             date_field_id = f"day{i}"
             date_field = WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.ID, date_field_id))
             )
             date_field.send_keys(formatted_dates[i])
+            print(f"Public Link: {i}")
 
         # Wait for the "Add a time slot" button to be clickable
         add_an_hour_button = WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.add-an-hour'))
         )
 
-        add_an_hour_button.click()
-        add_an_hour_button.click()
-        
+        # Convert text to number and round up
+        num_of_clicks = math.ceil(18 / 2)
+        print(f"Public Link: {num_of_clicks}")
+
+        for _ in range(num_of_clicks):
+            add_an_hour_button.click()
+
+        hour0=8
         # Iterate through the hours (h0 to h4)
-        for hour in range(5):
+        for hourIT in range(num_of_clicks):
             # Construct the ID of the input field
-            field_id = f"d0-h{hour}"
+            field_id = f"d0-h{hourIT}"
+            hour1=(hourIT*2)+hour0
 
             # Wait for the input field to be present
             input_field = WebDriverWait(browser, 10).until(
@@ -61,7 +69,7 @@ def fill_out_form(browser):
             )
 
             # Input some data (replace this with your actual input)
-            input_field.send_keys(f"{hour+17}")
+            input_field.send_keys(f"{hour1}")
 
 
         buttoncopy = WebDriverWait(browser, 10).until(
@@ -82,11 +90,8 @@ def fill_out_form(browser):
 
         public_link = browser.find_element(By.CLASS_NAME, 'public-link').get_attribute('href')
         admin_link = browser.find_element(By.CLASS_NAME, 'admin-link').get_attribute('href')
-
         print(f"Public Link: {public_link}")
-        print(f"Admin Link: {admin_link}")
-
-
+        print(f"Admin Link: {admin_link}")        
 
 
 
