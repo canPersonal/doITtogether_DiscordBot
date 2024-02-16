@@ -11,7 +11,7 @@ def run_discord_bot():
 
     # basic discord amenities
     print(discord.__version__)
-    TOKEN = 'MTE5MzY0NzkwMTE3NjQ5NjMwMQ.Gl_q6M.6Mha21QKgOCdkkUrZKOsieksAEgD21ijBAEKs8'
+    TOKEN = 'MTE5MzY0NzkwMTE3NjQ5NjMwMQ.GkkciM.1YofKBiTj2yP7_ExuM7BKJ8xTQ3ztnTm1LeA30'
     intents = discord.Intents.all()
     intents.members = True
     intents.message_content = True
