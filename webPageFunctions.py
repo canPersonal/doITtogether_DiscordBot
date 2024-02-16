@@ -8,21 +8,10 @@ import math
 
 def create_poll(event):
 
-    # Create a new instance of the Chrome driver
-    chrome_options = Options()
-    chrome_options.add_argument("--disable-images")  # Disable loading images
-    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
-    chrome_options.add_argument("--no-sandbox")  # Disable sandbox mode
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Disable /dev/shm usage
 
-    # Set the memory limit for the renderer process
-    chrome_options.add_argument("--memory-limit=256mb")
-
-    # Set the maximum number of processes for the renderer
-    chrome_options.add_argument("--renderer-process-limit=4")
 
     # Create a new instance of the Chrome driver with the configured options
-    browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Edge()
 
     try:
         # Load the webpage
