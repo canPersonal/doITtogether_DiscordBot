@@ -11,7 +11,7 @@ def create_poll(event):
 
 
     # Create a new instance of the Chrome driver with the configured options
-    browser = webdriver.Edge()
+    browser = webdriver.Opera()
 
     try:
         # Load the webpage
