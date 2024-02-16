@@ -12,7 +12,9 @@ def run_discord_bot():
     # basic discord amenities
     print(discord.__version__)
     with open('token.json', 'r') as file:
-            TOKEN = json.load(file)
+            TOKENL = json.load(file)
+    TOKENl=TOKENL[0]
+    TOKEN=TOKENl['token']
     intents = discord.Intents.all()
     intents.members = True
     intents.message_content = True
