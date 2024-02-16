@@ -15,8 +15,14 @@ def create_poll(event):
     chrome_options.add_argument("--no-sandbox")  # Disable sandbox mode
     chrome_options.add_argument("--disable-dev-shm-usage")  # Disable /dev/shm usage
 
-    # Create a new instance of the Chrome driver with the configured options
-    browser = webdriver.Chrome(options=chrome_options)
+    # Set the memory limit for the renderer process
+    chrome_options.add_argument("--memory-limit=256mb")
+
+    # Set the maximum number of processes for the renderer
+    chrome_options.add_argument("--renderer-process-limit=4")
+
+# Create a new instance of the Chrome driver with the configured options
+browser = webdriver.Chrome(options=chrome_options)
 
     try:
         # Load the webpage
