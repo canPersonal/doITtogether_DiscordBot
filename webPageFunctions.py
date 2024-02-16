@@ -8,7 +8,7 @@ import math
 def create_poll(event):
 
     # Create a new instance of the Chrome driver
-    browser = webdriver.Chrome()
+    browser = webdriver.Firefox()
 
     try:
         # Load the webpage
