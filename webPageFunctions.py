@@ -2,13 +2,21 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from datetime import datetime, timedelta
 import math
 
 def create_poll(event):
 
     # Create a new instance of the Chrome driver
-    browser = webdriver.Firefox()
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-images")  # Disable loading images
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
+    chrome_options.add_argument("--no-sandbox")  # Disable sandbox mode
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Disable /dev/shm usage
+
+    # Create a new instance of the Chrome driver with the configured options
+    browser = webdriver.Chrome(options=chrome_options)
 
     try:
         # Load the webpage
