@@ -21,8 +21,8 @@ def create_poll(event):
     # Set the maximum number of processes for the renderer
     chrome_options.add_argument("--renderer-process-limit=4")
 
-# Create a new instance of the Chrome driver with the configured options
-browser = webdriver.Chrome(options=chrome_options)
+    # Create a new instance of the Chrome driver with the configured options
+    browser = webdriver.Chrome(options=chrome_options)
 
     try:
         # Load the webpage
