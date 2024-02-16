@@ -4,8 +4,6 @@ import botClassViewEvents as botView
 
 async def delete_given_event(interaction: discord.Interaction, channel1, followup: discord.Message = None, eventname=str,replaceflag=0,guild=None):
 
-
-    print('helloI')
     # Get existing messages in the channel
     async for message in channel1.history(limit=None):
         if 0 <len(message.embeds):
@@ -98,16 +96,12 @@ def dataset_refresh(updateFlag,new_data,dateUSERID=0,timeUSER=0):
     elif updateFlag  == 2:
         matching_event = next((event for event in events_data if 'name' in event and event['name'] == new_data['name']), None)
         matching_index = next((idx for idx, event in enumerate(events_data) if 'name' in event and event['name'] == new_data['name']), None)
-        print('hello')
         if not matching_event:
             matching_event=0
-            print('hello2')
         else:
             if str(new_data['interactionUserID']) not in matching_event['author']:
                 matching_event=1
-                print('hello2')
             else:
-                print('hello3')
                 removed_event = events_data.pop(matching_index)
                 # Update the date and time of the matching event
                 matching_event['date'] = f'{dateUSERID}'
@@ -121,13 +115,10 @@ def dataset_refresh(updateFlag,new_data,dateUSERID=0,timeUSER=0):
         matching_index = next((idx for idx, event in enumerate(events_data) if 'name' in event and event['name'] == new_data['old_name']), None)
         if not matching_event:
             matching_event=0
-            print('hello2')
         else:
             if str(new_data['interactionUserID']) not in matching_event['author']:
                 matching_event=1
-                print('hello3')
             else:
-                print('hello4')
                 removed_event = events_data.pop(matching_index)
                 matching_event['name'] = new_data ['name']
                 matching_event['duration'] = new_data ['duration']

@@ -2,9 +2,6 @@ import discord
 import json
 from datetime import datetime
 import uuid
-from discord.ui import Button, View
-from discord import ButtonStyle
-import webPageFunctions
 import botClassViewEvents as botView
 import botFunctionsEvents as botFunc
 
@@ -25,7 +22,7 @@ class event_intiate(discord.ui.Modal, title='Initiate An Event!'):
     )
 
     duration_event = discord.ui.TextInput(
-        label='ApproxImate Duration',
+        label='ApproxImate Duration (Hours)',
         required=True,    
     )
 
@@ -43,7 +40,7 @@ class event_intiate(discord.ui.Modal, title='Initiate An Event!'):
 
 
     async def on_submit(self, interaction: discord.Interaction):
-
+        await interaction.response.send_message(f'Got it!', ephemeral=True)
         # Defaults
         if not self.email_event.value:
             # Assign a default value if it's empty
@@ -57,7 +54,7 @@ class event_intiate(discord.ui.Modal, title='Initiate An Event!'):
 
         # Errors
         if "@" not in var_email:
-            await interaction.response.send_message("Invalid email format. Please enter a valid email address.", ephemeral=True)
+            await interaction.followup.send("Invalid email format. Please enter a valid email address.", ephemeral=True)
             return
 
         # Check if the user wants to fix date and time
@@ -91,28 +88,24 @@ class event_intiate(discord.ui.Modal, title='Initiate An Event!'):
 
         # check for errors
         if new_data==-2:
-            return await interaction.followup.send(f"The name '{name_event}' is already taken.")
+            return await interaction.followup.send(f"The name '{self.name_event.value}' is already taken.", ephemeral=True)
         elif new_data==-1:
-            return await interaction.followup.send('Failed to find the database!')
-        elif new_data==0:
-            return await interaction.followup.send(f"No event found with the name '{name_event}'.")
-        elif new_data==1:
-            return await interaction.followup.send("You do not have permission to use this feature.")
+            return await interaction.followup.send('Failed to find the database!', ephemeral=True)
 
 
 
-        # If datetime, just send the buttons that will send the modal!
+        # If datetime, ask to call date time
         # If datetime not, initialize the event post in the channel!
         guild = interaction.guild
         if fix_datetime:
             author = discord.utils.get(guild.members, id=int(new_data['author']))
             if author:
                 dm_channel = await author.create_dm()
-            await dm_channel.send("**NEXT STEP: Call the /date_time command to register the date and time**")
+            await dm_channel.send("**Call the command:** ```/date_time``` ** to register the date and time**")
 
         else:
             view2 = botView.initialized_event(guild,new_data)    
-            channel= discord.utils.get(guild.channels,name='events')
+            channel= discord.utils.get(guild.channels,name='eventhorizon')
             title_text = self.name_event.value
             underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
 
@@ -124,7 +117,7 @@ class event_intiate(discord.ui.Modal, title='Initiate An Event!'):
             e.set_author(name=interaction.user,icon_url=interaction.user.avatar)
             await channel.send(embed=e,view=view2)
             
-        await interaction.response.send_message(f'Got it!', ephemeral=True)
+        
         
 
              
@@ -141,13 +134,13 @@ class setTime(discord.ui.Modal, title='Decide the TIME!'):
     )
 
     dateUS = discord.ui.TextInput(
-        label='date',
+        label='Date',
         required=True,
         placeholder='DD.MM.YYYY',
     )
 
     timeUS = discord.ui.TextInput(
-        label='Time',
+        label='TIme',
         required=True,
         placeholder='HH.MM UTC+X',
     )
@@ -164,18 +157,18 @@ class setTime(discord.ui.Modal, title='Decide the TIME!'):
 
         # check for errors
         if new_data==-2:
-            return await interaction.followup.send(f"The name '{name_event}' is already taken.")
+            return await interaction.followup.send(f"The name '{self.name_event.value}' is already taken.", ephemeral=True)
         elif new_data==-1:
-            return await interaction.followup.send('Failed to find the database!')
+            return await interaction.followup.send('Failed to find the database!', ephemeral=True)
         elif new_data==0:
-            return await interaction.followup.send(f"No event found with the name '{name_event}'.")
+            return await interaction.followup.send(f"No event found with the name '{self.name_event.value}'.", ephemeral=True)
         elif new_data==1:
-            return await interaction.followup.send("You do not have permission to use this feature.")
+            return await interaction.followup.send("You do not have permission to use this feature.", ephemeral=True)
 
 
         # Clear the previous message
         guild = interaction.guild
-        channel= discord.utils.get(guild.channels,name='events')
+        channel= discord.utils.get(guild.channels,name='eventhorizon')
         await botFunc.delete_given_event(discord.Interaction,channel1=channel, followup= interaction.followup, eventname=new_data['name'])
 
     
@@ -207,32 +200,33 @@ class edit_event(discord.ui.Modal, title='Event'):
         label='Old Event Name',
         required=True,
     )
-# 
+
     name_event = discord.ui.TextInput(
         label='Event Name',
         required=True,
     )
     
     description_event = discord.ui.TextInput(
-        label='Describe the event',
+        label='DescrIbe the event',
         style=discord.TextStyle.long,
         required=True,
         max_length=300,
     )
 
     duration_event = discord.ui.TextInput(
-        label='Approximate Duration',
+        label='ApproxImate DuratIon (Hours)',
         required=True,    
     )
 
     email_event = discord.ui.TextInput(
-        label='Your email',
+        label='Your emaIl',
         required=False,
         placeholder='user@example.com',
     )
 
 
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f'Got it!', ephemeral=True)
         
         
         # Defaults
@@ -245,7 +239,7 @@ class edit_event(discord.ui.Modal, title='Event'):
 
         # Errors
         if "@" not in var_email:
-            await interaction.response.send_message("Invalid email format. Please enter a valid email address.", ephemeral=True)
+            await interaction.followup.send("Invalid email format. Please enter a valid email address.", ephemeral=True)
             return
         
 
@@ -271,16 +265,13 @@ class edit_event(discord.ui.Modal, title='Event'):
         
         # check for errors
         if new_data==-2:
-            return await interaction.followup.send(f"The name '{name_event}' is already taken.")
+            return await interaction.followup.send(f"The name '{name_event}' is already taken.", ephemeral=True)
         elif new_data==-1:
-            return await interaction.followup.send('Failed to find the database!')
+            return await interaction.followup.send('Failed to find the database!', ephemeral=True)
         elif new_data==0:
-            return await interaction.followup.send(f"No event found with the name '{name_event}'.")
-        elif new_data==1:
-            return await interaction.followup.send("You do not have permission to use this feature.")
+            return await interaction.followup.send(f"No event found with the name '{name_event}'.", ephemeral=True)
 
-            
-        await interaction.response.send_message(f'Got it!', ephemeral=True)
+
         
 
              

@@ -16,10 +16,15 @@ def run_discord_bot():
     intents.members = True
     intents.message_content = True
     intents.messages = True
-    description ='Uslu Bot'
     
     # command sign: - 
-    bot = commands.Bot(command_prefix='-', description=description, intents=intents)
+    bot = commands.Bot(command_prefix='-', intents=intents, help_command=None)
+
+    
+    # help command
+    @bot.tree.command(name='help',description='Basics')
+    async def help(interaction: discord.Interaction):
+        await interaction.response.send_message('Use the /initiate command to share your interest. You can use /delete_event command to delete shared interests and events.', ephemeral=True)
 
     # on ready
     @bot.event
@@ -34,25 +39,25 @@ def run_discord_bot():
 
 
     # initiate command  
-    @bot.tree.command(name='initiate')
+    @bot.tree.command(name='initiate',description='Share your interest')
     async def initiate(interaction: discord.Interaction):
         await interaction.response.send_modal(botMod.event_intiate())
 
     # date and time command
-    @bot.tree.command(name='date_time')
+    @bot.tree.command(name='date_time',description='Schedule the time for an event')
     async def date_time(interaction: discord.Interaction):
         await interaction.response.send_modal(botMod.setTime())
 
 
     # delete event command
-    @bot.tree.command(name='delete_event')
+    @bot.tree.command(name='delete_event',description='Delete event/interest')
     async def delete_event(interaction: discord.Interaction):
         try:
             # Read existing events from the file
             with open('events.json', 'r') as file:
                 events_data = json.load(file)
         except FileNotFoundError:
-            return await interaction.response.send_message('No events file found.')
+            return await interaction.response.send_message('No events file found.', ephemeral=True)
 
         # Extract event names from the data
         event_names = [event['name'] for event in events_data]
@@ -68,17 +73,21 @@ def run_discord_bot():
                 timeout=60.0  # Adjust the timeout as needed
             )
         except asyncio.TimeoutError:
-            return await interaction.followup.send('Timed out. Deletion canceled.', ephemeral=True)
+            return await interaction.followup.send('Timed out.', ephemeral=True)
 
-        # Find the matching event in the data
+        # event of interest
         event_name_to_delete = response.content
-        # Check if the user wants to fix date and time
+        
+        # all events or specific
         string2= 'all'
         string1= str(event_name_to_delete)
         allevents = string1.casefold() == string2.casefold()
+
+        # all events has to be me
         if allevents:
             if 227169936735207425 ==interaction.user.id:
-            
+                guild = interaction.guild
+                # delete all with a loop
                 for event in events_data:
                     event_name_to_delete2=event['name']
                     new_data = {
@@ -86,32 +95,27 @@ def run_discord_bot():
                         'interactionUserID':interaction.user.id
                     }
                     new_data=botFunc.dataset_refresh(updateFlag=5,new_data=new_data)
-                    # check for errors
-                    if new_data==0:
-                        return await interaction.followup.send(f"No event found with the name '{event_name_to_delete2}'.", ephemeral=True)
-                    if new_data==1:
-                        return await interaction.followup.send("You do not have permission to use this feature.", ephemeral=True)
-
-                    guild = interaction.guild
+                    
+                    # delete all the channels
                     channel_name = event_name_to_delete2
                     new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
                     if  new_channel:
                         await new_channel.delete()
 
-
-                guild = interaction.guild
-                channel= discord.utils.get(guild.channels,name='events')
+                # delete all messages
+                channel= discord.utils.get(guild.channels,name='eventhorizon')
                 # Get existing messages in the channel
                 async for message in channel.history(limit=None):
                     await message.delete()
                 await interaction.followup.send('ALL GONE', ephemeral=True)
+                
+            # not me
             else:
                 return await interaction.followup.send("You do not have permission to use this feature.", ephemeral=True)
 
-            
+        # specific event 
         else:
-            # Clear the previous message
-
+            # Delete event
             new_data = {
                 'name':event_name_to_delete,
                 'interactionUserID':interaction.user.id
@@ -120,15 +124,16 @@ def run_discord_bot():
 
             # check for errors
             if new_data==0:
-                return await interaction.followup.send(f"No event found with the name '{event_name_to_delete}'.")
+                return await interaction.followup.send(f"No event found with the name '{event_name_to_delete}'.", ephemeral=True)
             if new_data==1:
-                return await interaction.followup.send("You do not have permission to use this feature.")
-            
+                return await interaction.followup.send("You are not the one that initiated the event.", ephemeral=True)
+
+            # delete message
             guild = interaction.guild
             channel= discord.utils.get(guild.channels,name='events')
             await botFunc.delete_given_event(discord.Interaction,channel1=channel, followup= interaction.followup, eventname=event_name_to_delete)
             
-
+            # delete text channel
             channel_name = event_name_to_delete
             new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
             if  new_channel:

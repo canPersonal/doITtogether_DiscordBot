@@ -1,19 +1,9 @@
 ### All View Classes
-
 import discord
-from discord.ext import commands
-from discord import app_commands
-import traceback
-import json
-from datetime import datetime
-import uuid
-from discord.ui import Button, View
-from discord import ButtonStyle
 import webPageFunctions
 import botFunctionsEvents as botFunc
 import botClassModalsEvents as botMod
 import asyncio
-
 
 #1 view for Proposing the event
 class initialized_event(discord.ui.View):
@@ -31,10 +21,8 @@ class initialized_event(discord.ui.View):
 
         
     # IamIn button
-    @discord.ui.button(label='Iam IN!', style=discord.ButtonStyle.green,custom_id='IN')      
+    @discord.ui.button(label='Lets do it', style=discord.ButtonStyle.green,custom_id='IN')      
     async def IamIN_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
-
-        #button.disabled=True
 
         # dataset refresh
         matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
@@ -62,11 +50,15 @@ class initialized_event(discord.ui.View):
             underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
             e = discord.Embed(
                 title=f"Event Name: {matching_event['name']}{underline_text}",
-                description='Somebody Joined the Party! Next Stage:',
+                description='Somebody joined! Next stage:',
                 color=0x7289da
                 )
             await dm_channel.send(embed=e, view=view2)
         else:
+            if not new_channel:
+                new_channel = await guild.create_text_channel(channel_name)
+                await new_channel.set_permissions(guild.default_role, read_messages=False)
+                
             participant_name= str(interaction.user)
             participant = discord.utils.get(guild.members, name=participant_name)
             if participant:
@@ -79,7 +71,7 @@ class initialized_event(discord.ui.View):
         await interaction.followup.send('See you there!', ephemeral=True)
 
     # SendMe
-    @discord.ui.button(label='SendMe Details!', style=discord.ButtonStyle.gray,custom_id='SE')
+    @discord.ui.button(label='See details', style=discord.ButtonStyle.gray,custom_id='SE')
     async def sendMe_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
         # send the description of the event from DM
@@ -91,7 +83,7 @@ class initialized_event(discord.ui.View):
         underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
         e = discord.Embed(
             title=f"{title_text}{underline_text}",
-            description=f"Description: {self.matching_event['description']} ",
+            description=f"Details: {self.matching_event['description']} ",
             color=0x7289da
             )
         await dm_channel.send(embed=e)
@@ -139,7 +131,7 @@ class joined_event(discord.ui.View):
         author = discord.utils.get(self.guild.members, id=int(self.matching_event['author']))
         if author:
             await author.send(f'Admin Link for the poll: {admin_link}')
-            await author.send("**NEXT STEP: Call the /date_time command to register the date and time**")
+            await author.send("**Call the command:** ```/date_time``` ** to register the date and time**")
                 
  
 
@@ -159,9 +151,11 @@ class joined_event(discord.ui.View):
         # ask for a new event
         await interaction.response.send_modal(botMod.edit_event())
 
-        await asyncio.sleep(20)
+        
+
+        await asyncio.sleep(300)
         guild = self.guild
-        channel_name = 'events'
+        channel_name = 'eventhorizon'
         channel1 = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
         await botFunc.delete_given_event(discord.Interaction,channel1=channel1, followup= interaction.followup, eventname=oldevname,replaceflag=1,guild=guild)
 
@@ -190,9 +184,15 @@ class joined_event(discord.ui.View):
             return await interaction.followup.send("You do not have permission to use this feature.")
 
         guild = self.guild
-        channel_name = 'events'
+        channel_name = 'eventhorizon'
         channel1 = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
         await botFunc.delete_given_event(discord.Interaction,channel1=channel1, followup= interaction.followup, eventname=self.matching_event['name'])
+
+        # delete text channel
+        channel_name = self.matching_event['name']
+        new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
+        if  new_channel:
+            await new_channel.delete()
 
 
 
@@ -249,7 +249,7 @@ class initialized_event2(discord.ui.View):
         await interaction.followup.send('See you there!', ephemeral=True)
 
     # SendMe
-    @discord.ui.button(label='SendMe Details!', style=discord.ButtonStyle.gray,custom_id='SE')
+    @discord.ui.button(label='See details', style=discord.ButtonStyle.gray,custom_id='SE')
     async def sendMe_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
         # send the description of the event from DM
