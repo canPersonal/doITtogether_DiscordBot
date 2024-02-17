@@ -2,13 +2,17 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from datetime import datetime, timedelta
 import math
 
 def create_poll(event):
     try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+
         # Create a new instance of the Chrome driver
-        browser = webdriver.Chrome()
+        browser = webdriver.Chrome(options=chrome_options)
 
         # Load the webpage
         browser.get("https://framadate.org/create_poll.php?type=date&lang=en")
