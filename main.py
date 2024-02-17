@@ -1,9 +1,9 @@
 import bot
 
-import subprocess
+#import subprocess
 
-cmd = '/home/container/chromedriver.sh'
-time = subprocess.Popen (cmd, shell=True)
+#cmd = '/home/container/chromedriver.sh'
+#time = subprocess.Popen (cmd, shell=True)
 
 
 if __name__=='__main__':
