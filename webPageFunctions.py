@@ -9,7 +9,7 @@ def create_poll(event):
 
         # Iterate through each poll entry
         given_date = datetime.now() + timedelta(days=1)
-        given_duration=int(event['duration'])
+        given_duration=round(int(event['duration']))
         for poll in data:
             # Check if the start date and duration match
             if poll["start_date"] == given_date.strftime("%Y-%m-%d") and poll["duration"] == given_duration:
