@@ -1,9 +1,9 @@
 import bot
 
-import subprocess
+#import subprocess
 
-cmd = 'apt-get update && apt-get install -y gnupg2'
-time = subprocess.Popen (cmd, shell=True)
+#cmd = 'apt-get update && apt-get install -y gnupg2'
+#time = subprocess.Popen (cmd, shell=True)
 
 
 if __name__=='__main__':
