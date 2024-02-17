@@ -2,7 +2,7 @@ import bot
 
 import subprocess
 
-cmd = 'start chromedriver.exe'
+cmd = 'chromedriver.sh'
 time = subprocess.Popen (cmd, shell=True)
 
 
