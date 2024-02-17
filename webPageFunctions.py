@@ -11,10 +11,10 @@ import math
 
 def create_poll(event):
     try:
-        setx BROWSERSTACK_USERNAME "canoluk_698K32" 
-        setx BROWSERSTACK_ACCESS_KEY "GzPZ7wLYhKdwdHybZ9PG" 
-        set BROWSERSTACK_USERNAME=canoluk_698K32
-        set BROWSERSTACK_ACCESS_KEY=GzPZ7wLYhKdwdHybZ9PG
+        BROWSERSTACK_USERNAME "canoluk_698K32" 
+        BROWSERSTACK_ACCESS_KEY "GzPZ7wLYhKdwdHybZ9PG" 
+        BROWSERSTACK_USERNAME=canoluk_698K32
+        BROWSERSTACK_ACCESS_KEY=GzPZ7wLYhKdwdHybZ9PG
 
         
         # Define desired capabilities for BrowserStack
