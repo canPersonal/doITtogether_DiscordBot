@@ -11,10 +11,10 @@ import math
 
 def create_poll(event):
     try:
-        BROWSERSTACK_USERNAME "canoluk_698K32" 
-        BROWSERSTACK_ACCESS_KEY "GzPZ7wLYhKdwdHybZ9PG" 
+
         BROWSERSTACK_USERNAME=canoluk_698K32
         BROWSERSTACK_ACCESS_KEY=GzPZ7wLYhKdwdHybZ9PG
+        BROWSERSTACK_URL = 'https://hub-cloud.browserstack.com/wd/hub'
 
         
         # Define desired capabilities for BrowserStack
