@@ -14,14 +14,10 @@ class initialized_event(discord.ui.View):
         self.guild=guild
 
 async def disable_buttons(self, interaction: discord.Interaction):
-    # Disable all buttons in the view except for the button interacted with
+    # Disable all buttons in the view for the interacting user
     for item in self.children:
         if isinstance(item, discord.ui.Button):
-            # Check if the button label matches the label of the button interacted with
-            if item.label == interaction.data['custom_id']:
-                item.disabled = True
-            else:
-                item.disabled = False
+            item.disabled = True
 
         
     # IamIn button
