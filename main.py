@@ -2,7 +2,7 @@ import bot
 
 import subprocess
 
-cmd = 'sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add'
+cmd = 'apt-get update && apt-get install -y gnupg2'
 time = subprocess.Popen (cmd, shell=True)
 
 
