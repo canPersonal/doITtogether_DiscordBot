@@ -13,22 +13,10 @@ import math
 def create_poll(event):
     try:
 
-        BROWSERSTACK_USERNAME="canoluk_698K32"
-        BROWSERSTACK_ACCESS_KEY="GzPZ7wLYhKdwdHybZ9PG"
-        BROWSERSTACK_URL = 'https://hub-cloud.browserstack.com/wd/hub'
 
-        
-
-
-        # Set up WebDriver with BrowserStack
-        browser = webdriver.Remote(
-            command_executor=BROWSERSTACK_URL,
-            username=BROWSERSTACK_USERNAME,
-            access_key=BROWSERSTACK_ACCESS_KEY
-        )
 
         # Create a new instance of the Firefox driver
-        # browser = webdriver.Firefox()
+        browser = webdriver.Chrome()
 
         # Load the webpage
         browser.get("https://framadate.org/create_poll.php?type=date&lang=en")
