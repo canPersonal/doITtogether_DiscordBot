@@ -18,19 +18,11 @@ def create_poll(event):
         BROWSERSTACK_URL = 'https://hub-cloud.browserstack.com/wd/hub'
 
         
-        # Define desired capabilities for BrowserStack
-        desired_capabilities = {
-            'browser': 'Chrome',
-            'browser_version': 'latest',
-            'os': 'Windows',
-            'os_version': '10',
-            'name': 'Your Test Name'  # Replace with a descriptive name for your test
-        }
+
 
         # Set up WebDriver with BrowserStack
         browser = webdriver.Remote(
             command_executor=BROWSERSTACK_URL,
-            desired_capabilities=desired_capabilities,
             username=BROWSERSTACK_USERNAME,
             access_key=BROWSERSTACK_ACCESS_KEY
         )
