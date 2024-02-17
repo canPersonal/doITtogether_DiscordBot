@@ -5,7 +5,7 @@ import json
 def create_poll(event):
     try:
         with open('poll_links.json', 'r') as file:
-            data = json.load(f)
+            data = json.load(file)
 
         # Iterate through each poll entry
         given_date = datetime.now() + timedelta(days=1)
