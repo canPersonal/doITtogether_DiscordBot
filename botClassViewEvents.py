@@ -13,11 +13,15 @@ class initialized_event(discord.ui.View):
         self.matching_event = matching_event
         self.guild=guild
 
-    async def disable_buttons(self):
-        # Disable all buttons in the view
-        for item in self.children:
-            if isinstance(item, discord.ui.Button):
+async def disable_buttons(self, interaction: discord.Interaction):
+    # Disable all buttons in the view except for the button interacted with
+    for item in self.children:
+        if isinstance(item, discord.ui.Button):
+            # Check if the button label matches the label of the button interacted with
+            if item.label == interaction.data['custom_id']:
                 item.disabled = True
+            else:
+                item.disabled = False
 
         
     # IamIn button
@@ -66,7 +70,7 @@ class initialized_event(discord.ui.View):
 
 
         # Send the message with buttons and view
-        await self.disable_buttons()
+        await self.disable_buttons(interaction)
         await interaction.response.edit_message(view=self)
         await interaction.followup.send('See you there!', ephemeral=True)
 
@@ -244,7 +248,7 @@ class initialized_event2(discord.ui.View):
 
 
         # Send the message with buttons and view
-        await self.disable_buttons()
+        await self.disable_buttons(interaction)
         await interaction.response.edit_message(view=self)
         await interaction.followup.send('See you there!', ephemeral=True)
 
