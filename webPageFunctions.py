@@ -10,6 +10,13 @@ def create_poll(event):
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
+        options.add_argument("start-maximized")
+        options.add_argument("disable-infobars")
+        options.add_argument("--disable-extensions")
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-application-cache')
+        options.add_argument('--disable-gpu')
+        options.add_argument("--disable-dev-shm-usage")
 
         # Create a new instance of the Chrome driver
         browser = webdriver.Chrome(options=chrome_options)
