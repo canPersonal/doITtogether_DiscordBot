@@ -3,24 +3,18 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.firefox import GeckoDriverManager
 from datetime import datetime, timedelta
 import math
 
 def create_poll(event):
     try:
-        # Create Firefox options
-        firefox_options = Options()
-        firefox_options.headless = True
-        firefox_options.add_argument("--start-maximized")
-        firefox_options.add_argument("--disable-infobars")
-        firefox_options.add_argument("--disable-extensions")
-        firefox_options.add_argument("--no-sandbox")
-        firefox_options.add_argument("--disable-application-cache")
-        firefox_options.add_argument("--disable-gpu")
-        firefox_options.add_argument("--disable-dev-shm-usage")
+
+        
+        browser = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
 
         # Create a new instance of the Firefox driver
-        browser = webdriver.Firefox(options=firefox_options)
+        # browser = webdriver.Firefox()
 
         # Load the webpage
         browser.get("https://framadate.org/create_poll.php?type=date&lang=en")
