@@ -88,7 +88,7 @@ def dataset_refresh(updateFlag,new_data,dateUSERID=0,timeUSER=0):
         if not matching_event:
             matching_event=0
         is_participant = str(dateUSERID) in matching_event.get('participant_ids', [])
-        if not is_participant
+        if not is_participant:
             removed_event = events_data.pop(matching_index)
             matching_event['num_participants'] += 1
             matching_event['participant_names'].append(str(timeUSER))
