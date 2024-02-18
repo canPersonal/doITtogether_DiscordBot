@@ -82,16 +82,20 @@ def dataset_refresh(updateFlag,new_data,dateUSERID=0,timeUSER=0):
 
     # update because somebody joined the event
     if updateFlag  == 1:
+        
         matching_event = next((event for event in events_data if 'name' in event and event['name'] == new_data), None)
         matching_index = next((idx for idx, event in enumerate(events_data) if 'name' in event and event['name'] == new_data), None)
         if not matching_event:
             matching_event=0
-
-        removed_event = events_data.pop(matching_index)
-        matching_event['num_participants'] += 1
-        matching_event['participant_names'].append(str(timeUSER))
-        matching_event['participant_ids'].append(str(dateUSERID))
-        events_data.append(matching_event)
+        is_participant = str(dateUSERID) in matching_event.get('participant_ids', [])
+        if not is_participant
+            removed_event = events_data.pop(matching_index)
+            matching_event['num_participants'] += 1
+            matching_event['participant_names'].append(str(timeUSER))
+            matching_event['participant_ids'].append(str(dateUSERID))
+            events_data.append(matching_event)
+        else
+            matching_event=-5
         
     elif updateFlag  == 2:
         matching_event = next((event for event in events_data if 'name' in event and event['name'] == new_data['name']), None)
