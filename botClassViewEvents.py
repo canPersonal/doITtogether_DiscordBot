@@ -24,52 +24,59 @@ async def disable_buttons(self, interaction: discord.Interaction):
     @discord.ui.button(label='Lets do it', style=discord.ButtonStyle.green,custom_id='IN')      
     async def IamIN_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
-        # dataset refresh
-        matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+        is_participant = interaction.user.id in self.matching_event.get('participant_ids', [])
 
-        # get the channel
-        guild = interaction.guild
-        channel_name = f"{matching_event['name']}"
-        new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
+        if not is_participant:
 
-        # if 2 participants, create channel, send author the options
-        if matching_event['num_participants'] == 2:
-            if not new_channel:
-                new_channel = await guild.create_text_channel(channel_name)
-                await new_channel.set_permissions(guild.default_role, read_messages=False)
-                # Grant read permissions to participants
-                for participant_name in self.matching_event['participant_names']:
-                    participant = discord.utils.get(guild.members, name=participant_name)
-                    if participant:
-                        await new_channel.set_permissions(participant, read_messages=True)
-            author = discord.utils.get(guild.members, id=int(matching_event['author']))
-            if author:
-                dm_channel = await author.create_dm()
-            view2 = joined_event(guild,matching_event)
-            title_text = self.matching_event['name']
-            underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
-            e = discord.Embed(
-                title=f"Event Name: {matching_event['name']}{underline_text}",
-                description='Somebody joined! Next stage:',
-                color=0x7289da
-                )
-            await dm_channel.send(embed=e, view=view2)
-        else:
-            if not new_channel:
-                new_channel = await guild.create_text_channel(channel_name)
-                await new_channel.set_permissions(guild.default_role, read_messages=False)
+            # dataset refresh
+            matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+
+            # get the channel
+            guild = interaction.guild
+            channel_name = f"{matching_event['name']}"
+            new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
+
+            # if 2 participants, create channel, send author the options
+            if matching_event['num_participants'] == 2:
+                if not new_channel:
+                    new_channel = await guild.create_text_channel(channel_name)
+                    await new_channel.set_permissions(guild.default_role, read_messages=False)
+                    # Grant read permissions to participants
+                    for participant_name in matching_event['participant_names']:
+                        participant = discord.utils.get(guild.members, name=participant_name)
+                        if participant:
+                            await new_channel.set_permissions(participant, read_messages=True)
+                author = discord.utils.get(guild.members, id=int(matching_event['author']))
+                if author:
+                    dm_channel = await author.create_dm()
+                view2 = joined_event(guild,matching_event)
+                title_text = self.matching_event['name']
+                underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
+                e = discord.Embed(
+                    title=f"Event Name: {matching_event['name']}{underline_text}",
+                    description='Somebody joined! Next stage:',
+                    color=0x7289da
+                    )
+                await dm_channel.send(embed=e, view=view2)
+            else:
+                if not new_channel:
+                    new_channel = await guild.create_text_channel(channel_name)
+                    await new_channel.set_permissions(guild.default_role, read_messages=False)
                 
-            participant_name= str(interaction.user)
-            participant = discord.utils.get(guild.members, name=participant_name)
-            if participant:
-                await new_channel.set_permissions(participant, read_messages=True)
+                participant_name= str(interaction.user)
+                participant = discord.utils.get(guild.members, name=participant_name)
+                if participant:
+                    await new_channel.set_permissions(participant, read_messages=True)
 
 
-        # Send the message with buttons and view
-        await self.disable_buttons(interaction)
-        await interaction.response.edit_message(view=self)
-        await interaction.followup.send('See you there!', ephemeral=True)
-
+            # Send the message with buttons and view
+            #await self.disable_buttons(interaction)
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send('See you there!', ephemeral=True)
+        else:
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send('You already joined!', ephemeral=True)
+    
     # SendMe
     @discord.ui.button(label='See details', style=discord.ButtonStyle.gray,custom_id='SE')
     async def sendMe_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
@@ -150,8 +157,11 @@ class joined_event(discord.ui.View):
 
         # ask for a new event
         await interaction.response.send_modal(botMod.edit_event())
-
         
+        # Disable the buttons and update the message
+        await self.disable_buttons()
+        await interaction.message.edit(view=self)
+
 
         await asyncio.sleep(300)
         guild = self.guild
@@ -163,9 +173,7 @@ class joined_event(discord.ui.View):
 
 
         
-        # Disable the buttons and update the message
-        await self.disable_buttons()
-        await interaction.message.edit(view=self)
+
 
 
     @discord.ui.button(style=discord.ButtonStyle.red, custom_id='cancel', label='Cancel')
@@ -221,32 +229,38 @@ class initialized_event2(discord.ui.View):
     @discord.ui.button(label='Join!', style=discord.ButtonStyle.green,custom_id='IN')      
     async def IamIN_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
-        #button.disabled=True
+        is_participant = interaction.user.id in self.matching_event.get('participant_ids', [])
 
-        # dataset refresh
-        matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+        if not is_participant:
 
-        # get the channel
-        guild = interaction.guild
-        channel_name = f"{matching_event['name']}"
-        new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
 
-        # if 2 participants, create channel, send author the options
+            # dataset refresh
+            matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
 
-        if not new_channel:
-            new_channel = await guild.create_text_channel(channel_name)
-            await new_channel.set_permissions(guild.default_role, read_messages=False)
+            # get the channel
+            guild = interaction.guild
+            channel_name = f"{matching_event['name']}"
+            new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
+
+            # if 2 participants, create channel, send author the options
+
+            if not new_channel:
+                new_channel = await guild.create_text_channel(channel_name)
+                await new_channel.set_permissions(guild.default_role, read_messages=False)
            
-        participant_name= str(interaction.user)
-        participant = discord.utils.get(guild.members, name=participant_name)
-        if participant:
-            await new_channel.set_permissions(participant, read_messages=True)
+            participant_name= str(interaction.user)
+            participant = discord.utils.get(guild.members, name=participant_name)
+            if participant:
+                await new_channel.set_permissions(participant, read_messages=True)
 
 
-        # Send the message with buttons and view
-        await self.disable_buttons(interaction)
-        await interaction.response.edit_message(view=self)
-        await interaction.followup.send('See you there!', ephemeral=True)
+            # Send the message with buttons and view
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send('See you there!', ephemeral=True)
+        else:
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send('You already joined!', ephemeral=True)
+            
 
     # SendMe
     @discord.ui.button(label='See details', style=discord.ButtonStyle.gray,custom_id='SE')
