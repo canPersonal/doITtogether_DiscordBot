@@ -24,12 +24,16 @@ class initialized_event(discord.ui.View):
     @discord.ui.button(label='Lets do it', style=discord.ButtonStyle.green,custom_id='IN')      
     async def IamIN_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
-        is_participant = str(interaction.user.id) in self.matching_event.get('participant_ids', [])
 
-        if not is_participant:
 
-            # dataset refresh
-            matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+        # dataset refresh
+        matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+
+        if matching_event==-5:
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send('You already joined!', ephemeral=True)
+
+        else:
 
             # get the channel
             guild = interaction.guild
@@ -73,9 +77,8 @@ class initialized_event(discord.ui.View):
             #await self.disable_buttons(interaction)
             await interaction.response.edit_message(view=self)
             await interaction.followup.send('See you there!', ephemeral=True)
-        else:
-            await interaction.response.edit_message(view=self)
-            await interaction.followup.send('You already joined!', ephemeral=True)
+
+
     
     # SendMe
     @discord.ui.button(label='See details', style=discord.ButtonStyle.gray,custom_id='SE')
@@ -229,13 +232,14 @@ class initialized_event2(discord.ui.View):
     @discord.ui.button(label='Join!', style=discord.ButtonStyle.green,custom_id='IN')      
     async def IamIN_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
-        is_participant = interaction.user.id in self.matching_event.get('participant_ids', [])
-
-        if not is_participant:
 
 
-            # dataset refresh
-            matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+        # dataset refresh
+        matching_event=botFunc.dataset_refresh(updateFlag=1,new_data=self.matching_event['name'],dateUSERID=interaction.user.id,timeUSER=interaction.user)
+        if matching_event==-5:
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send('You already joined!', ephemeral=True)
+        else:
 
             # get the channel
             guild = interaction.guild
@@ -257,9 +261,7 @@ class initialized_event2(discord.ui.View):
             # Send the message with buttons and view
             await interaction.response.edit_message(view=self)
             await interaction.followup.send('See you there!', ephemeral=True)
-        else:
-            await interaction.response.edit_message(view=self)
-            await interaction.followup.send('You already joined!', ephemeral=True)
+
             
 
     # SendMe
