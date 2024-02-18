@@ -133,7 +133,7 @@ def run_discord_bot():
 
             # delete message
             guild = interaction.guild
-            channel= discord.utils.get(guild.channels,name='events')
+            channel= discord.utils.get(guild.channels,name='eventhorizon')
             await botFunc.delete_given_event(discord.Interaction,channel1=channel, followup= interaction.followup, eventname=event_name_to_delete)
             
             # delete text channel
