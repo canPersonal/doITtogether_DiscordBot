@@ -24,7 +24,7 @@ class initialized_event(discord.ui.View):
     @discord.ui.button(label='Lets do it', style=discord.ButtonStyle.green,custom_id='IN')      
     async def IamIN_button(self,  interaction:discord.Interaction, button: discord.ui.Button):
 
-        is_participant = interaction.user.id in self.matching_event.get('participant_ids', [])
+        is_participant = str(interaction.user.id) in self.matching_event.get('participant_ids', [])
 
         if not is_participant:
 
