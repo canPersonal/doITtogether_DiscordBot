@@ -17,7 +17,7 @@ async def disable_buttons(self, interaction: discord.Interaction):
     # Disable all buttons in the view for the interacting user
     for item in self.children:
         if isinstance(item, discord.ui.Button):
-            item.disabled = True
+            item.disabled = False
 
         
     # IamIn button
@@ -222,7 +222,7 @@ class initialized_event2(discord.ui.View):
         # Disable all buttons in the view
         for item in self.children:
             if isinstance(item, discord.ui.Button):
-                item.disabled = True
+                item.disabled = False
 
         
     # IamIn button
