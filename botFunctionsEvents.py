@@ -27,7 +27,7 @@ async def delete_given_event(interaction: discord.Interaction, channel1, followu
 
         matching_event=events_data[-1]
         print(f"matching_event['name']")
-        view2 = botView.initialized_event(guild,matching_event)   
+        view2 = botView.initialized_event(guild,matching_event,timeout=None)   
         title_text = matching_event['name']
         underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
         e = discord.Embed(
