@@ -53,7 +53,7 @@ class initialized_event(discord.ui.View):
                 author = discord.utils.get(guild.members, id=int(matching_event['author']))
                 if author:
                     dm_channel = await author.create_dm()
-                view2 = joined_event(guild,matching_event)
+                view2 = joined_event(guild,matching_event,timeout=None)
                 title_text = self.matching_event['name']
                 underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
                 e = discord.Embed(
