@@ -58,9 +58,10 @@ async def delete_given_event(interaction: discord.Interaction, channel1, followu
         if new_channel:
         # New name for the channel
             new_channel_name = matching_event['name']
+            modified_text = new_channel_name.replace(" ", "-")
     
             # Editing the channel's name
-            await new_channel.edit(name=new_channel_name)
+            await new_channel.edit(name=modified_text)
             print(f"Changed text channel name to: {new_channel_name}")
         else:
             print("Text channel not found.")
