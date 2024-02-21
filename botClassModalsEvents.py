@@ -104,7 +104,7 @@ class event_intiate(discord.ui.Modal, title='Initiate An Event!'):
             await dm_channel.send("**Call the command:** ```/date_time``` ** to register the date and time**")
 
         else:
-            view2 = botView.initialized_event(guild,new_data)    
+            view2 = botView.initialized_event(guild,new_data,timeout=None)    
             channel= discord.utils.get(guild.channels,name='eventhorizon')
             title_text = self.name_event.value
             underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
@@ -173,7 +173,7 @@ class setTime(discord.ui.Modal, title='Decide the TIME!'):
 
     
         # Post new message?
-        view = botView.initialized_event2(guild,new_data)
+        view = botView.initialized_event2(guild,new_data,timeout=None)
         title_text = new_data['name']
         underline_text = '\n' + '_' * len(title_text)  # Create underlining with underscores
 
