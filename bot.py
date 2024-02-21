@@ -138,7 +138,8 @@ def run_discord_bot():
             
             # delete text channel
             channel_name = event_name_to_delete
-            new_channel = discord.utils.get(guild.channels, name=channel_name, type=discord.ChannelType.text)
+            modified_text = channel_name.replace(" ", "-")
+            new_channel = discord.utils.get(guild.channels, name=modified_text, type=discord.ChannelType.text)
             if  new_channel:
                 await new_channel.delete()
 
